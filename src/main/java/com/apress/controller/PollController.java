@@ -56,8 +56,9 @@ public class PollController
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.PUT)
     public ResponseEntity<?> updatePoll(@RequestBody Poll poll, @PathVariable Long pollId) {
         // Save the entity
+
         Poll p = pollRepository.save(poll);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(p, HttpStatus.OK);
     }
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.DELETE)
     public ResponseEntity<?> deletePoll(@PathVariable Long pollId) {

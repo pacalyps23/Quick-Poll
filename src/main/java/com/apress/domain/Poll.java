@@ -52,4 +52,5 @@ public class Poll
     {
         this.options = options;
     }
+
 }
