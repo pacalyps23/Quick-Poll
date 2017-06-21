@@ -1,6 +1,7 @@
 package com.apress.controller;
 
 import com.apress.domain.Poll;
+import com.apress.exception.ResourceNotFoundException;
 import com.apress.repo.PollRepo;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,17 @@ public class PollController
         return new ResponseEntity<>(allPolls, HttpStatus.OK);
     }
 
+    protected void verifyPoll(Long pollId) throws ResourceNotFoundException
+    {
+        Poll poll = pollRepository.findOne(pollId);
+        {
+            if(poll == null)
+            {
+                throw new ResourceNotFoundException("Poll with id " + pollId + " not found");
+            }
+        }
+    }
+
     @RequestMapping(value="/polls", method=RequestMethod.POST)
     public ResponseEntity<?> createPoll(@RequestBody Poll poll)
     {
@@ -49,19 +61,23 @@ public class PollController
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.GET)
     public ResponseEntity<?> getPoll(@PathVariable Long pollId)
     {
+        verifyPoll(pollId);
         Poll p = pollRepository.findOne(pollId);
         return new ResponseEntity<> (p, HttpStatus.OK);
     }
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.PUT)
-    public ResponseEntity<?> updatePoll(@RequestBody Poll poll, @PathVariable Long pollId) {
-        // Save the entity
+    public ResponseEntity<?> updatePoll(@RequestBody Poll poll, @PathVariable Long pollId)
+    {
 
+        verifyPoll(pollId);
         Poll p = pollRepository.save(poll);
         return new ResponseEntity<>(p, HttpStatus.OK);
     }
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.DELETE)
-    public ResponseEntity<?> deletePoll(@PathVariable Long pollId) {
+    public ResponseEntity<?> deletePoll(@PathVariable Long pollId)
+    {
+        verifyPoll(pollId);
         pollRepository.delete(pollId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
