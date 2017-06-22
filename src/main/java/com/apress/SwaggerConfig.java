@@ -1,5 +1,6 @@
 package com.apress;
 
+
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.models.dto.builder.ApiInfoBuilder;
@@ -13,16 +14,17 @@ import javax.inject.Inject;
 /**
  * Created by luisgarcia on 6/21/17.
  */
+
+
 @Configuration
 @EnableSwagger
-public class SwaggerConfig {
+public class SwaggerConfig
+{
 
     @Inject
     private SpringSwaggerConfig springSwaggerConfig;
 
-    @Bean
-    public SwaggerSpringMvcPlugin configureSwagger() {
-        SwaggerSpringMvcPlugin swaggerSpringMvcPlugin = new SwaggerSpringMvcPlugin(this.springSwaggerConfig);
+    private ApiInfo getApiInfo() {
 
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("QuickPoll REST API")
@@ -33,13 +35,26 @@ public class SwaggerConfig {
                 .licenseUrl("http://opensource.org/licenses/MIT")
                 .build();
 
+        return apiInfo;
+    }
+
+    @Bean
+    public SwaggerSpringMvcPlugin v1APIConfiguration() {
+        SwaggerSpringMvcPlugin swaggerSpringMvcPlugin = new SwaggerSpringMvcPlugin(this.springSwaggerConfig);
         swaggerSpringMvcPlugin
-                .apiInfo(apiInfo)
-                .apiVersion("1.0")
-                .includePatterns("/polls/*.*", "/votes/*.*", "/computeresult/*.*");
-
+                .apiInfo(getApiInfo()).apiVersion("1.0")
+                .includePatterns("/v1/*.*").swaggerGroup("v1");
         swaggerSpringMvcPlugin.useDefaultResponseMessages(false);
+        return swaggerSpringMvcPlugin;
+    }
 
+    @Bean
+    public SwaggerSpringMvcPlugin v2APIConfiguration(){
+        SwaggerSpringMvcPlugin swaggerSpringMvcPlugin = new SwaggerSpringMvcPlugin(this.springSwaggerConfig);
+        swaggerSpringMvcPlugin
+                .apiInfo(getApiInfo()).apiVersion("2.0")
+                .includePatterns("/v2/*.*").swaggerGroup("v2");
+        swaggerSpringMvcPlugin.useDefaultResponseMessages(false);
         return swaggerSpringMvcPlugin;
     }
 }
